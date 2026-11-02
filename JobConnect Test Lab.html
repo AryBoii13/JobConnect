@@ -1,0 +1,583 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>JobConnect Test Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a narrow rail for accounts and signup beside one working panel.
+   The panel changes with the signed-in role (seeker or recruiter). */
+:root{
+  --bg:#EEF3F5; --surface:#FFFFFF; --surface-2:#E3EBEF; --ink:#12202B; --muted:#4F6270; --line:#C6D3DA;
+  --accent:#0E7C86; --accent-ink:#FFFFFF; --accent-soft:#D4EEF0;
+  --warn:#8A5200; --warn-soft:#FBE9C8; --good:#17734A; --good-soft:#D5F0E2; --bad:#B3261E; --bad-soft:#F9DAD7;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D161C; --surface:#14212A; --surface-2:#1B2C37; --ink:#E6EEF2; --muted:#9FB3C0; --line:#2A3E4B;
+  --accent:#3CC4CF; --accent-ink:#06262A; --accent-soft:#123B40;
+  --warn:#F2B35B; --warn-soft:#3A2C10; --good:#5FD39A; --good-soft:#123325; --bad:#FF8A80; --bad-soft:#3D1B19;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D161C; --surface:#14212A; --surface-2:#1B2C37; --ink:#E6EEF2; --muted:#9FB3C0; --line:#2A3E4B;
+  --accent:#3CC4CF; --accent-ink:#06262A; --accent-soft:#123B40;
+  --warn:#F2B35B; --warn-soft:#3A2C10; --good:#5FD39A; --good-soft:#123325; --bad:#FF8A80; --bad-soft:#3D1B19;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:28px;font-weight:700}
+h2{font-size:19px;font-weight:700}
+h3{font-size:16px;font-weight:700}
+p{margin:0}
+.app{max-width:1180px;margin:0 auto;padding-block:20px 40px;display:flex;flex-direction:column;gap:20px}
+.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.top .lead{max-width:62ch;color:var(--muted);margin-top:6px}
+.who{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:15px}
+.layout{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:20px;align-items:start}
+.side{display:flex;flex-direction:column;gap:20px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.card>h2{margin-bottom:12px}
+label,legend{font-weight:600;font-size:14px}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+input[type=text],textarea{width:100%;font:400 15px/1.4 var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+textarea{min-height:130px;resize:vertical;font-family:var(--mono);font-size:14px}
+input:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible,.role-opt:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+fieldset{border:0;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:8px}
+.role-opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;background:var(--bg)}
+.role-opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.role-opt input{margin-top:4px;accent-color:var(--accent)}
+.role-opt b{display:block;font-size:15px}
+.role-opt small{display:block;color:var(--muted);font-size:13px;line-height:1.35}
+.btn{font:600 15px/1 var(--body);border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:10px 14px;cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn.small{padding:7px 10px;font-size:14px}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.err{color:var(--bad);font-size:14px;min-height:20px;margin-top:8px}
+.hint{color:var(--muted);font-size:13px;line-height:1.4}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.acct{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 0;border-top:1px solid var(--line)}
+.acct:first-child{border-top:0}
+.acct.on .nm{color:var(--accent);font-weight:600}
+.nm{font-family:var(--mono);font-size:14px;overflow-wrap:anywhere}
+.pill{font:600 12px/1 var(--body);padding:4px 8px;border-radius:999px;white-space:nowrap}
+.pill.seeker{background:var(--accent-soft);color:var(--accent)}
+.pill.employer{background:var(--warn-soft);color:var(--warn)}
+.pill.sample{background:var(--surface-2);color:var(--muted);margin-left:6px}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:-4px -4px 16px;overflow-x:auto}
+.tab{font:600 15px/1 var(--body);background:none;border:0;border-bottom:3px solid transparent;color:var(--muted);padding:12px 12px 11px;cursor:pointer;white-space:nowrap}
+.tab[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent)}
+.badge{display:inline-block;min-width:20px;text-align:center;background:var(--accent);color:var(--accent-ink);border-radius:999px;font-size:12px;padding:2px 6px;margin-left:6px}
+.flash{border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:15px}
+.flash.ok{background:var(--good-soft);color:var(--good)}
+.flash.bad{background:var(--bad-soft);color:var(--bad)}
+.flash.info{background:var(--accent-soft);color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 13px/1 var(--mono);padding:5px 9px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line)}
+.chip.hit{background:var(--good-soft);color:var(--good);border-color:transparent}
+.chip.miss{background:transparent;color:var(--muted);border-style:dashed}
+.lab{font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.06em}
+.mirror{font:400 12px/1.4 var(--mono);color:var(--muted);margin-top:16px}
+.muted{color:var(--muted)}
+.job{border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:var(--bg)}
+.job summary{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,200px);gap:8px 16px;align-items:center;padding:12px 14px;cursor:pointer;list-style:none}
+.job summary::-webkit-details-marker{display:none}
+.job[open] summary{border-bottom:1px solid var(--line)}
+.jt{display:flex;flex-direction:column;min-width:0}
+.jt strong{overflow-wrap:anywhere}
+.jb{padding:12px 14px 14px}
+.pct{font:600 15px/1 var(--mono);font-variant-numeric:tabular-nums;display:flex;justify-content:space-between;margin-bottom:5px}
+.meter{position:relative;height:10px;border-radius:6px;background:var(--surface-2)}
+.meter span{position:absolute;inset:0 auto 0 0;border-radius:6px;background:var(--accent)}
+.meter span.low{background:var(--muted)}
+.meter i{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);left:30%}
+.calc{font:400 14px/1.5 var(--mono);background:var(--surface-2);border-radius:8px;padding:10px 12px;margin-top:12px;overflow-wrap:anywhere}
+.tablewrap{overflow-x:auto;margin-top:6px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.note{border-top:1px solid var(--line);padding:12px 0}
+.note:first-of-type{border-top:0}
+.note time{font-size:13px;color:var(--muted)}
+.new{font:600 12px/1 var(--body);background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:3px 7px;margin-right:6px}
+.test{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;padding:9px 0;border-top:1px solid var(--line)}
+.test:first-of-type{border-top:0}
+.test .st{font:600 12px/1 var(--body);padding:4px 7px;border-radius:6px;height:fit-content;margin-top:2px}
+.test .st.pass{background:var(--good-soft);color:var(--good)}
+.test .st.fail{background:var(--bad-soft);color:var(--bad)}
+.test small{grid-column:2;color:var(--muted);font:400 13px/1.4 var(--mono);overflow-wrap:anywhere}
+.empty{color:var(--muted);padding:18px 0}
+.pill.new{background:var(--surface-2);color:var(--muted)}
+.pill.shortlisted{background:var(--good-soft);color:var(--good)}
+.pill.declined{background:var(--bad-soft);color:var(--bad)}
+.thread{display:flex;flex-direction:column;gap:8px;margin:6px 0 12px}
+.msg{max-width:88%;border-radius:12px;padding:8px 12px;background:var(--surface-2);border:1px solid var(--line)}
+.msg.mine{margin-left:auto;background:var(--accent-soft);border-color:transparent}
+.msg small{display:block;color:var(--muted);font-size:12px;margin-bottom:2px}
+.msg p{white-space:pre-wrap;overflow-wrap:anywhere}
+.msg-form textarea{min-height:70px;font-family:var(--body);font-size:15px}
+.job summary .row{min-width:0}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:520px){.job summary{grid-template-columns:minmax(0,1fr)}h1{font-size:24px}}
+@media (prefers-reduced-motion:no-preference){.flash{animation:pop .25s ease-out}@keyframes pop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div>
+      <h1>JobConnect Test Lab</h1>
+      <p class="lead">The same signup, resume-parsing and matching rules as the Django project, plus Apply and messaging between seekers and recruiters, running in this page. Accounts and data stay in this browser.</p>
+    </div>
+    <div class="who" id="who"></div>
+  </header>
+
+  <div class="layout">
+    <aside class="side">
+      <section class="card" aria-labelledby="su-h">
+        <h2 id="su-h">Create an account</h2>
+        <form id="signup-form" autocomplete="off" novalidate>
+          <div class="field"><label for="su-username">Username</label>
+            <input type="text" id="su-username" maxlength="150" placeholder="e.g. priya_k"></div>
+          <fieldset><legend>I am a</legend>
+            <label class="role-opt"><input type="radio" name="role" value="seeker" checked>
+              <span><b>Job seeker</b><small>Upload a resume, see jobs ranked by match, get alerts.</small></span></label>
+            <label class="role-opt"><input type="radio" name="role" value="employer">
+              <span><b>Recruiter</b><small>Post jobs with the skills they need. Stored as the employer role.</small></span></label>
+          </fieldset>
+          <div class="field"><label for="su-headline">Headline <span class="muted">(optional)</span></label>
+            <input type="text" id="su-headline" maxlength="150" placeholder="Final-year CS student"></div>
+          <button class="btn" type="submit">Create account</button>
+          <div class="err" id="su-err" role="alert"></div>
+          <p class="hint">The Django site also asks for an email and a password. This lab skips both.</p>
+        </form>
+      </section>
+      <section class="card" aria-labelledby="ac-h">
+        <h2 id="ac-h">Accounts</h2>
+        <div id="accounts"></div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn ghost small" data-act="sample">Reset to sample data</button>
+          <button class="btn ghost small danger" data-act="clear" id="clear-btn">Clear all</button>
+        </div>
+      </section>
+    </aside>
+    <main class="card" id="work" aria-live="polite"></main>
+  </div>
+</div>
+
+<script>
+/* LOGIC:START — mirrors the Django code. No DOM access in this block. */
+const VOCAB=["python","java","c++","c","javascript","typescript","sql","r","django","flask","fastapi","react","angular","vue","node.js","node","html","css","bootstrap","tailwind","pandas","numpy","matplotlib","scikit-learn","tensorflow","pytorch","machine learning","deep learning","data analysis","data visualization","git","github","docker","kubernetes","linux","rest api","graphql","mysql","postgresql","sqlite","mongodb","firebase","aws","azure","gcp","excel","power bi","tableau","communication","leadership","teamwork","problem solving"];
+const THRESHOLD=0.3;
+
+function pyRound2(x){ /* Python's round(x, 2): halves go to the even neighbour */
+  const s=x*100, f=Math.floor(s);
+  if(Math.abs(s-f-0.5)<1e-9) return (f%2===0?f:f+1)/100;
+  return Math.round(s)/100;
+}
+function parseSkillList(str){ /* Profile.skill_set() / JobPosting.skill_set() */
+  return new Set(String(str||'').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean));
+}
+function matchScore(candidate,required){ /* jobsboard/matching.py */
+  if(required.size===0) return 0;
+  let n=0; required.forEach(s=>{ if(candidate.has(s)) n++; });
+  return pyRound2(n/required.size);
+}
+function hasWord(text,skill){ /* same rule as the (?<!\w)skill(?!\w) regex */
+  let i=text.indexOf(skill);
+  while(i!==-1){
+    const b=text[i-1], a=text[i+skill.length];
+    if(!(b&&/\w/.test(b)) && !(a&&/\w/.test(a))) return true;
+    i=text.indexOf(skill,i+1);
+  }
+  return false;
+}
+function extractSkills(text){ /* resumes/utils.py */
+  const lower=String(text||'').toLowerCase();
+  return VOCAB.filter(s=>hasWord(lower,s));
+}
+function mergeSkills(existing,found){ /* resumes/views.py */
+  const set=parseSkillList(existing); found.forEach(s=>set.add(s));
+  return Array.from(set).sort().join(', ');
+}
+function newState(){ return {users:[],resumes:[],postings:[],notifications:[],applications:[],nextId:1}; }
+function signUp(st,f){ /* accounts/forms.py */
+  const username=String(f.username||'').trim();
+  if(!username) return {error:'Username is required.'};
+  if(!/^[\w.@+-]{1,150}$/.test(username)) return {error:'Enter a valid username. Letters, digits and @/./+/-/_ only.'};
+  if(st.users.some(u=>u.username.toLowerCase()===username.toLowerCase())) return {error:'A user with that username already exists.'};
+  if(f.role!=='seeker'&&f.role!=='employer') return {error:'Choose job seeker or recruiter.'};
+  const user={username,role:f.role,headline:String(f.headline||'').trim().slice(0,150),skills:'',sample:!!f.sample};
+  st.users.push(user); return {user};
+}
+function uploadResume(st,username,text){ /* resumes/views.py upload_resume */
+  const u=st.users.find(x=>x.username===username);
+  const found=extractSkills(text);
+  const before=parseSkillList(u.skills);
+  u.skills=mergeSkills(u.skills,found);
+  const resume={id:st.nextId++,user:username,found,at:Date.now()};
+  st.resumes.push(resume);
+  return {resume,added:found.filter(s=>!before.has(s))};
+}
+function postJob(st,username,f){ /* jobsboard/views.py + signals.py */
+  const title=String(f.title||'').trim(), description=String(f.description||'').trim(), required=String(f.required||'').trim();
+  if(!title) return {error:'Title is required.'};
+  if(title.length>150) return {error:'Title is limited to 150 characters.'};
+  if(!description) return {error:'Description is required.'};
+  if(!required) return {error:'Add at least one required skill.'};
+  const posting={id:st.nextId++,employer:username,title,description,required,at:Date.now(),report:[]};
+  st.postings.push(posting);
+  const req=parseSkillList(required);
+  st.users.filter(u=>u.role==='seeker').forEach(u=>{
+    const score=matchScore(parseSkillList(u.skills),req);
+    const alert=score>=THRESHOLD;
+    if(alert) st.notifications.push({id:st.nextId++,user:u.username,postingId:posting.id,read:false,at:Date.now(),
+      message:"New match: '"+posting.title+"' is a "+Math.round(score*100)+"% skill match for you."});
+    posting.report.push({username:u.username,score,alert});
+  });
+  return {posting};
+}
+const STATUSES=['new','shortlisted','declined'];
+const MAX_MSG=1000;
+function findPosting(st,id){ return st.postings.find(p=>p.id===id); }
+function isParty(app,username){ return app.seeker===username||app.employer===username; }
+function applyToJob(st,username,postingId,note){ /* Application model + apply view (planned) */
+  const u=st.users.find(x=>x.username===username), p=findPosting(st,postingId);
+  if(!u||u.role!=='seeker') return {error:'Only job seekers can apply.'};
+  if(!p) return {error:'That job no longer exists.'};
+  if(st.applications.some(a=>a.postingId===postingId&&a.seeker===username)) return {error:'You already applied to this job.'};
+  const text=String(note||'').trim()||'Hello, I would like to apply for this role.';
+  if(text.length>MAX_MSG) return {error:'Keep the message under '+MAX_MSG+' characters.'};
+  const app={id:st.nextId++,postingId,seeker:username,employer:p.employer,status:'new',at:Date.now(),messages:[]};
+  app.messages.push({id:st.nextId++,from:username,text,at:Date.now(),read:false});
+  st.applications.push(app); return {app};
+}
+function sendMessage(st,username,appId,text){ /* Message model + reply view (planned) */
+  const app=st.applications.find(a=>a.id===appId);
+  if(!app) return {error:'That conversation does not exist.'};
+  if(!isParty(app,username)) return {error:'Only the seeker and the recruiter on this application can write here.'};
+  const t=String(text||'').trim();
+  if(!t) return {error:'Write a message first.'};
+  if(t.length>MAX_MSG) return {error:'Keep the message under '+MAX_MSG+' characters.'};
+  const m={id:st.nextId++,from:username,text:t,at:Date.now(),read:false};
+  app.messages.push(m); return {message:m};
+}
+function setStatus(st,username,appId,status){
+  const app=st.applications.find(a=>a.id===appId);
+  if(!app) return {error:'That application does not exist.'};
+  if(app.employer!==username) return {error:'Only the recruiter who posted the job can change the status.'};
+  if(!STATUSES.includes(status)) return {error:'Unknown status.'};
+  app.status=status; return {app};
+}
+function markRead(st,username,app){ /* marks messages written by the other person as read */
+  let n=0; app.messages.forEach(m=>{ if(m.from!==username&&!m.read){m.read=true;n++;} }); return n;
+}
+function unreadCount(st,username){
+  let n=0; st.applications.forEach(a=>{ if(isParty(a,username)) a.messages.forEach(m=>{ if(m.from!==username&&!m.read) n++; }); }); return n;
+}
+function seedSample(){
+  const st=newState();
+  const mk=(username,role,headline)=>signUp(st,{username,role,headline,sample:true});
+  mk('recruiter_demo','employer','Hiring lead, sample company');
+  mk('seeker_a','seeker','Final-year CS student');
+  mk('seeker_b','seeker','Data trainee');
+  uploadResume(st,'seeker_a','Final-year CS student. Built a Django job portal in Python with SQL and Git. Familiar with HTML, CSS and teamwork.');
+  uploadResume(st,'seeker_b','Interned on data analysis with Pandas, NumPy, Excel and SQL. Dashboards in Tableau. Strong communication.');
+  const j1=postJob(st,'recruiter_demo',{title:'Backend Intern',description:'Work on a Django backend with the platform team.',required:'python, django, rest api'}).posting;
+  const j2=postJob(st,'recruiter_demo',{title:'Data Analyst Trainee',description:'Clean data, build reports and dashboards.',required:'sql, excel, pandas, data visualization'}).posting;
+  postJob(st,'recruiter_demo',{title:'Frontend Developer',description:'Build screens in React for the web app.',required:'javascript, react, html, css'});
+  postJob(st,'recruiter_demo',{title:'Cloud Support Engineer',description:'Help customers run services on cloud servers.',required:'aws, linux, docker, git'});
+  const a1=applyToJob(st,'seeker_a',j1.id,'Hi, I built a Django project for college and would love to join the backend team.').app;
+  sendMessage(st,'recruiter_demo',a1.id,'Thanks for applying. Could you share a link to your project?');
+  applyToJob(st,'seeker_b',j2.id,'');
+  return st;
+}
+function runTests(){
+  const out=[]; const eq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+  const t=(name,fn)=>{ try{ const r=fn(); out.push({name,ok:r.ok,detail:r.detail}); }catch(e){ out.push({name,ok:false,detail:String(e)}); } };
+  const S_=(...a)=>new Set(a);
+  t('match_score: 2 shared of 3 required gives 0.67',()=>{const v=matchScore(S_('python','django','sql'),S_('python','django','rest api'));return{ok:v===0.67,detail:'got '+v};});
+  t('match_score: a job with no required skills scores 0',()=>{const v=matchScore(S_('python'),S_());return{ok:v===0,detail:'got '+v};});
+  t('extract_skills: "c" is not found inside "react"',()=>{const v=extractSkills('I build interfaces in React');return{ok:v.includes('react')&&!v.includes('c'),detail:JSON.stringify(v)};});
+  t('extract_skills: standalone C and C++ are both found',()=>{const v=extractSkills('Wrote C and C++ code');return{ok:v.includes('c')&&v.includes('c++'),detail:JSON.stringify(v)};});
+  t('extract_skills: ignores case and follows list order',()=>{const v=extractSkills('DJANGO and Python');return{ok:eq(v,['python','django']),detail:JSON.stringify(v)};});
+  t('profile merge: union, sorted, no duplicates',()=>{const v=mergeSkills('python, sql',['django','python']);return{ok:v==='django, python, sql',detail:v};});
+  t('signup: a repeated username is rejected',()=>{const st=newState();signUp(st,{username:'asha',role:'seeker'});const r=signUp(st,{username:'ASHA',role:'employer'});return{ok:!!r.error&&st.users.length===1,detail:r.error||'accepted'};});
+  t('signup: role must be seeker or recruiter',()=>{const r=signUp(newState(),{username:'x1',role:'admin'});return{ok:!!r.error,detail:r.error||'accepted'};});
+  t('alert threshold: 3 of 10 notifies, 2 of 10 does not',()=>{
+    const st=newState(); signUp(st,{username:'emp',role:'employer'});
+    signUp(st,{username:'s1',role:'seeker'}); signUp(st,{username:'s2',role:'seeker'});
+    st.users[1].skills='python, sql, git'; st.users[2].skills='python, sql';
+    postJob(st,'emp',{title:'Big role',description:'d',required:'python, java, sql, django, react, git, docker, aws, linux, excel'});
+    const who=st.notifications.map(n=>n.user);
+    return{ok:eq(who,['s1']),detail:'alerts to '+JSON.stringify(who)};});
+  t('ranking: best match first, ties keep newest first',()=>{
+    const st=newState(); signUp(st,{username:'emp',role:'employer'}); signUp(st,{username:'s',role:'seeker'}); st.users[1].skills='python';
+    ['A:python, sql','B:python','C:python, sql'].forEach(x=>{const [n,r]=x.split(':');postJob(st,'emp',{title:n,description:'d',required:r.trim()});});
+    const mine=parseSkillList('python');
+    const rows=st.postings.slice().sort((a,b)=>b.id-a.id).map(p=>({p,s:matchScore(mine,parseSkillList(p.required))})).sort((a,b)=>b.s-a.s);
+    const order=rows.map(r=>r.p.title);
+    return{ok:eq(order,['B','C','A']),detail:order.join(', ')};});
+  t('alert text matches the Django wording',()=>{
+    const st=newState(); signUp(st,{username:'emp',role:'employer'}); signUp(st,{username:'s',role:'seeker'}); st.users[1].skills='python, django, sql';
+    postJob(st,'emp',{title:'Backend Intern',description:'d',required:'python, django, rest api'});
+    const m=st.notifications[0]&&st.notifications[0].message;
+    return{ok:m==="New match: 'Backend Intern' is a 67% skill match for you.",detail:String(m)};});
+  t('recruiters never receive match alerts',()=>{
+    const st=newState(); signUp(st,{username:'e1',role:'employer'}); signUp(st,{username:'e2',role:'employer'}); st.users[1].skills='python';
+    postJob(st,'e1',{title:'Job',description:'d',required:'python'});
+    return{ok:st.notifications.length===0,detail:st.notifications.length+' alerts'};});
+  const mk=()=>{const st=newState();['emp','emp2'].forEach(n=>signUp(st,{username:n,role:'employer'}));['s','s2'].forEach(n=>signUp(st,{username:n,role:'seeker'}));
+    const p=postJob(st,'emp',{title:'Job',description:'d',required:'python'}).posting;return {st,p};};
+  t('apply: a seeker can apply once, a second try is rejected',()=>{const {st,p}=mk();const a=applyToJob(st,'s',p.id,'hi');const b=applyToJob(st,'s',p.id,'again');
+    return{ok:!!a.app&&!!b.error&&st.applications.length===1,detail:(b.error||'second apply accepted')};});
+  t('apply: recruiters cannot apply',()=>{const {st,p}=mk();const r=applyToJob(st,'emp2',p.id,'hi');return{ok:!!r.error&&st.applications.length===0,detail:r.error||'accepted'};});
+  t('messages: only the seeker and that job\'s recruiter can write',()=>{const {st,p}=mk();const a=applyToJob(st,'s',p.id,'hi').app;
+    const bad1=sendMessage(st,'s2',a.id,'sneaky'),bad2=sendMessage(st,'emp2',a.id,'sneaky'),ok1=sendMessage(st,'emp',a.id,'welcome'),ok2=sendMessage(st,'s',a.id,'thanks');
+    return{ok:!!bad1.error&&!!bad2.error&&!!ok1.message&&!!ok2.message&&a.messages.length===3,detail:a.messages.length+' messages in the thread'};});
+  t('messages: empty or over-long text is rejected',()=>{const {st,p}=mk();const a=applyToJob(st,'s',p.id,'hi').app;
+    const e1=sendMessage(st,'emp',a.id,'   '),e2=sendMessage(st,'emp',a.id,'x'.repeat(MAX_MSG+1)),ok=sendMessage(st,'emp',a.id,'x'.repeat(MAX_MSG));
+    return{ok:!!e1.error&&!!e2.error&&!!ok.message,detail:(e1.error||'')+' | '+(e2.error||'')};});
+  t('unread: apply alerts the recruiter, reading clears it, a reply alerts the seeker',()=>{const {st,p}=mk();const a=applyToJob(st,'s',p.id,'hi').app;
+    const r1=unreadCount(st,'emp'),s1=unreadCount(st,'s');markRead(st,'emp',a);const r2=unreadCount(st,'emp');
+    sendMessage(st,'emp',a.id,'hello');const s2=unreadCount(st,'s');
+    return{ok:r1===1&&s1===0&&r2===0&&s2===1,detail:'recruiter '+r1+'→'+r2+', seeker '+s1+'→'+s2};});
+  t('status: only the recruiter who posted the job can change it',()=>{const {st,p}=mk();const a=applyToJob(st,'s',p.id,'hi').app;
+    const b1=setStatus(st,'s',a.id,'shortlisted'),b2=setStatus(st,'emp2',a.id,'shortlisted'),b3=setStatus(st,'emp',a.id,'maybe'),ok=setStatus(st,'emp',a.id,'shortlisted');
+    return{ok:!!b1.error&&!!b2.error&&!!b3.error&&!!ok.app&&a.status==='shortlisted',detail:'status is '+a.status};});
+  return out;
+}
+/* LOGIC:END */
+
+/* ---------- interface ---------- */
+const KEY='jobconnect-lab-v1';
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S,current=null,tab='jobs',flash=null,openJob=null,openApp=null,armClear=false;
+const drafts={};
+const SAMPLE_RESUME='Final-year CS student. Built a Django job portal in Python with SQL and Git. Familiar with HTML, CSS and teamwork.';
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify({S,current,tab}));}catch(e){}}
+function load(){try{const r=JSON.parse(localStorage.getItem(KEY)||'null');if(r&&r.S&&Array.isArray(r.S.users)){r.S.applications=r.S.applications||[];return r;}}catch(e){}return null;}
+function me(){return S.users.find(u=>u.username===current)||null;}
+function tabsFor(u){return !u?['jobs','tests']:u.role==='seeker'?['jobs','apps','resume','notes','tests']:['jobs','post','mine','inbox','tests'];}
+const TAB_LABEL={jobs:'Jobs',apps:'My applications',resume:'Resume',notes:'Notifications',post:'Post a job',mine:'My postings',inbox:'Applicants',tests:'Self-tests'};
+const STATUS={new:'New',shortlisted:'Shortlisted',declined:'Declined'};
+const chips=(set,against)=>Array.from(set).map(s=>against?`<span class="chip ${against.has(s)?'hit':'miss'}">${esc(s)}</span>`:`<span class="chip">${esc(s)}</span>`).join('');
+const fmt=t=>new Date(t).toLocaleString([], {dateStyle:'medium',timeStyle:'short'});
+const roleName=r=>r==='employer'?'Recruiter':'Job seeker';
+
+function meter(score){const p=Math.round(score*100);
+  return `<div><div class="pct"><span>${p}%</span><span class="muted">${score>=THRESHOLD?'alert level':'below 30%'}</span></div>
+  <div class="meter" role="img" aria-label="${p} percent match"><span class="${score>=THRESHOLD?'':'low'}" style="width:${p}%"></span><i title="30% alert threshold"></i></div></div>`;}
+
+function panelJobs(){
+  const u=me(), seeker=u&&u.role==='seeker', mine=seeker?parseSkillList(u.skills):new Set();
+  const rows=S.postings.slice().sort((a,b)=>b.id-a.id).map(p=>({p,req:parseSkillList(p.required)}));
+  rows.forEach(r=>r.score=seeker?matchScore(mine,r.req):null);
+  if(seeker) rows.sort((a,b)=>b.score-a.score);
+  let intro=seeker?(mine.size?'Ranked by match with your profile skills. Open a job to see how the score is worked out.':'Your profile has no skills yet, so every score is 0%. Parse a resume on the Resume tab.'):'Newest first. Sign in as a job seeker to see match scores.';
+  if(!rows.length) return `<p class="empty">No jobs yet. Sign in as a recruiter and post one.</p>`;
+  const list=rows.map(({p,req,score})=>{
+    let calc='';
+    if(seeker){const shared=Array.from(req).filter(s=>mine.has(s)),missing=Array.from(req).filter(s=>!mine.has(s));
+      calc=`<p class="lab">Compared with your profile</p><div class="chips">${chips(req,mine)}</div>
+      <p class="hint" style="margin-top:6px">Solid green: you have it. Dashed grey: missing.</p>
+      <div class="calc">shared = ${shared.length} (${esc(shared.join(', ')||'none')})<br>required = ${req.size}<br>score = ${shared.length} ÷ ${req.size} = ${score.toFixed(2)} → ${Math.round(score*100)}%<br>meets the 30% alert level: ${score>=THRESHOLD?'yes':'no'}</div>`;}
+    else calc=`<p class="lab">Required skills</p><div class="chips">${chips(req)}</div>`;
+    let act='';
+    if(seeker){const ap=S.applications.find(a=>a.postingId===p.id&&a.seeker===u.username);
+      act=ap?`<p class="lab">Your application</p><p>Sent ${fmt(ap.at)} · <span class="pill ${ap.status}">${STATUS[ap.status]}</span></p><div class="row" style="margin-top:8px"><button class="btn small" data-act="openapp" data-id="${ap.id}">Open conversation</button></div>`
+      :`<p class="lab">Apply</p><div class="field"><label for="ap-note-${p.id}">Message to ${esc(p.employer)} <span class="muted">(optional)</span></label><textarea id="ap-note-${p.id}" maxlength="${MAX_MSG}" style="min-height:80px;font-family:var(--body);font-size:15px" placeholder="Say hello, and why you fit this role"></textarea></div><button class="btn" data-act="apply" data-id="${p.id}">Apply to this job</button>`;}
+    else if(u&&u.role==='employer'&&p.employer===u.username){const n=S.applications.filter(a=>a.postingId===p.id).length;act=`<p class="lab">Applicants</p><p>${n} so far. Open the Applicants tab to read and reply.</p>`;}
+    calc+=act;
+    return `<details class="job" ${openJob===p.id?'open':''}><summary><div class="jt"><strong>${esc(p.title)}</strong><span class="muted">posted by ${esc(p.employer)}</span></div>${seeker?meter(score):''}</summary>
+      <div class="jb"><p>${esc(p.description)}</p>${calc}</div></details>`;}).join('');
+  return `<h2 style="margin-bottom:6px">Job postings</h2><p class="hint" style="margin-bottom:14px">${intro}</p>${list}
+    <p class="mirror">mirrors jobsboard/views.py posting_list() and jobsboard/matching.py</p>`;
+}
+function panelResume(){
+  const u=me(), mine=parseSkillList(u.skills), n=S.resumes.filter(r=>r.user===u.username).length;
+  const text=drafts[u.username]!==undefined?drafts[u.username]:(n?'':SAMPLE_RESUME);
+  return `<h2 style="margin-bottom:6px">Resume</h2>
+  <p class="hint" style="margin-bottom:12px">Paste resume text or choose a .txt file. The Django site also reads PDFs; here, paste the text from your PDF.</p>
+  <div class="field"><label for="resume-text">Resume text</label><textarea id="resume-text" spellcheck="false">${esc(text)}</textarea></div>
+  <div class="row"><input type="file" id="resume-file" accept=".txt,text/plain" aria-label="Choose a .txt resume">
+  <button class="btn" data-act="parse">Parse and save to profile</button></div>
+  <p class="lab">Your profile skills (${mine.size})</p>
+  <div class="chips">${mine.size?chips(mine):'<span class="muted">None yet.</span>'}</div>
+  <p class="hint" style="margin-top:8px">${n} resume${n===1?'':'s'} parsed so far. Each parse adds to the profile and never removes skills.</p>
+  <p class="mirror">mirrors resumes/utils.py extract_skills() and resumes/views.py upload_resume()</p>`;
+}
+function panelNotes(){
+  const u=me(), list=S.notifications.filter(n=>n.user===u.username).sort((a,b)=>b.id-a.id);
+  const html=list.length?list.map(n=>`<div class="note"><p>${n.read?'':'<span class="new">new</span>'}${esc(n.message)}</p>
+    <time>${fmt(n.at)}</time> · <button class="btn ghost small" data-act="openjob" data-id="${n.postingId}">View job</button></div>`).join('')
+    :'<p class="empty">No alerts yet. You get one when a recruiter posts a job that is at least a 30% match for your skills.</p>';
+  list.forEach(n=>n.read=true);
+  return `<h2 style="margin-bottom:10px">Notifications</h2>${html}<p class="mirror">mirrors jobsboard/signals.py and the notifications view (opening the page marks alerts read)</p>`;
+}
+function panelPost(){
+  return `<h2 style="margin-bottom:6px">Post a job</h2>
+  <p class="hint" style="margin-bottom:12px">When you publish, every seeker account is scored and anyone at 30% or more gets an alert.</p>
+  <form id="post-form" novalidate>
+  <div class="field"><label for="pj-title">Title</label><input type="text" id="pj-title" maxlength="150" placeholder="Backend Intern"></div>
+  <div class="field"><label for="pj-desc">Description</label><textarea id="pj-desc" style="font-family:var(--body);font-size:15px" placeholder="What the person will work on"></textarea></div>
+  <div class="field"><label for="pj-req">Required skills, comma separated</label><input type="text" id="pj-req" placeholder="python, django, sql"></div>
+  <button class="btn" type="submit">Publish job</button></form>
+  <p class="mirror">mirrors jobsboard/views.py posting_create() and jobsboard/signals.py</p>`;
+}
+function panelMine(){
+  const u=me(), list=S.postings.filter(p=>p.employer===u.username).sort((a,b)=>b.id-a.id);
+  if(!list.length) return `<p class="empty">You have not posted a job yet. Use Post a job to publish one and see who gets alerted.</p>`;
+  return `<h2 style="margin-bottom:6px">My postings</h2><p class="hint" style="margin-bottom:14px">Each posting keeps the report from the moment it was published.</p>`+list.map((p,i)=>{
+    const rows=p.report.length?p.report.map(r=>`<tr><td class="nm">${esc(r.username)}</td><td class="num">${Math.round(r.score*100)}%</td><td>${r.alert?'Alert sent':'No alert'}</td></tr>`).join(''):'';
+    const sent=p.report.filter(r=>r.alert).length;
+    return `<details class="job" ${i===0?'open':''}><summary><div class="jt"><strong>${esc(p.title)}</strong><span class="muted">${fmt(p.at)}</span></div><div class="pct"><span>${sent} alert${sent===1?'':'s'}</span><span class="muted">of ${p.report.length} seekers</span></div></summary>
+    <div class="jb"><p class="lab" style="margin-top:0">Required skills</p><div class="chips">${chips(parseSkillList(p.required))}</div>
+    <p class="lab">Signal report</p>${p.report.length?`<div class="tablewrap"><table><thead><tr><th>Seeker</th><th>Score</th><th>Result</th></tr></thead><tbody>${rows}</tbody></table></div>`:'<p class="hint">No seeker accounts existed when this job was posted.</p>'}</div></details>`;}).join('')
+    +`<p class="mirror">mirrors jobsboard/signals.py notify_matching_candidates()</p>`;
+}
+function threadHtml(a,u){
+  const msgs=a.messages.map(m=>`<div class="msg ${m.from===u.username?'mine':''}"><small>${esc(m.from)} · ${fmt(m.at)}</small><p>${esc(m.text)}</p></div>`).join('');
+  return `<p class="lab" style="margin-top:0">Conversation</p><div class="thread">${msgs}</div>
+  <form class="msg-form" data-id="${a.id}" novalidate><div class="field"><label for="msg-${a.id}">Reply</label><textarea id="msg-${a.id}" maxlength="${MAX_MSG}" placeholder="Write a message"></textarea></div><button class="btn small" type="submit">Send message</button></form>`;
+}
+function appCard(a,u){
+  const emp=u.role==='employer', p=findPosting(S,a.postingId)||{title:'(removed job)',required:''};
+  if(openApp===a.id) markRead(S,u.username,a);   // opening a thread marks it read
+  const unread=a.messages.filter(m=>m.from!==u.username&&!m.read).length;
+  let extra='';
+  if(emp){
+    const sk=S.users.find(x=>x.username===a.seeker)||{skills:'',headline:''}, mine=parseSkillList(sk.skills), req=parseSkillList(p.required), sc=matchScore(mine,req);
+    extra=`<p>${esc(sk.headline||'No headline')}</p><p class="lab">Match with ${esc(p.title)}: ${Math.round(sc*100)}%</p><div class="chips">${chips(req,mine)}</div>
+    <p class="lab">Status</p><div class="row">${STATUSES.map(s=>`<button class="btn small ${a.status===s?'':'ghost'}" data-act="status" data-id="${a.id}" data-s="${s}" aria-pressed="${a.status===s}">${STATUS[s]}</button>`).join('')}</div><div style="height:14px"></div>`;
+  }
+  return `<details class="job" data-app="${a.id}" ${openApp===a.id?'open':''}><summary><div class="jt"><strong>${esc(emp?a.seeker:p.title)}</strong><span class="muted">${emp?'applied for '+esc(p.title):'posted by '+esc(a.employer)}</span></div><div class="row" style="justify-content:flex-end"><span class="pill ${a.status}">${STATUS[a.status]}</span>${unread?`<span class="badge">${unread} new</span>`:''}</div></summary><div class="jb">${extra}${threadHtml(a,u)}</div></details>`;
+}
+function panelApps(){
+  const u=me(), list=S.applications.filter(a=>a.seeker===u.username).sort((a,b)=>b.id-a.id);
+  if(!list.length) return `<h2 style="margin-bottom:6px">My applications</h2><p class="empty">You have not applied yet. Open a job on the Jobs tab and press Apply to start a conversation with the recruiter.</p>`;
+  return `<h2 style="margin-bottom:6px">My applications</h2><p class="hint" style="margin-bottom:14px">Open one to read replies and write back. The recruiter can mark you shortlisted or declined.</p>${list.map(a=>appCard(a,u)).join('')}<p class="mirror">planned for Django: Application and Message models, apply and reply views</p>`;
+}
+function panelInbox(){
+  const u=me(), list=S.applications.filter(a=>a.employer===u.username).map(a=>{const p=findPosting(S,a.postingId),sk=S.users.find(x=>x.username===a.seeker);return {a,score:matchScore(parseSkillList(sk?sk.skills:''),parseSkillList(p?p.required:''))};}).sort((x,y)=>y.score-x.score||y.a.id-x.a.id);
+  if(!list.length) return `<h2 style="margin-bottom:6px">Applicants</h2><p class="empty">No applicants yet. Seekers apply from a job on the Jobs tab. Sign in as seeker_a or seeker_b to try it.</p>`;
+  return `<h2 style="margin-bottom:6px">Applicants</h2><p class="hint" style="margin-bottom:14px">Best match first. Open one to read the message, reply or set a status.</p>${list.map(x=>appCard(x.a,u)).join('')}<p class="mirror">planned for Django: Application and Message models, applicant list and reply views</p>`;
+}
+function panelTests(){
+  const res=runTests(), pass=res.filter(r=>r.ok).length;
+  return `<h2 style="margin-bottom:6px">Self-tests</h2>
+  <p class="hint" style="margin-bottom:12px"><b>${pass} of ${res.length}</b> checks pass. They run on throwaway data, so your accounts are untouched.</p>`
+   +res.map(r=>`<div class="test"><span class="st ${r.ok?'pass':'fail'}">${r.ok?'PASS':'FAIL'}</span><span>${esc(r.name)}</span><small>${esc(r.detail)}</small></div>`).join('')
+   +`<p class="mirror">same rules as resumes/utils.py, jobsboard/matching.py and jobsboard/signals.py</p>`;
+}
+const PANELS={jobs:panelJobs,apps:panelApps,resume:panelResume,notes:panelNotes,post:panelPost,mine:panelMine,inbox:panelInbox,tests:panelTests};
+
+function renderWho(){
+  const u=me();
+  $('#who').innerHTML=u?`<span>Signed in as <b class="nm">${esc(u.username)}</b></span><span class="pill ${u.role}">${roleName(u.role)}</span><button class="btn ghost small" data-act="signout">Sign out</button>`
+    :`<span class="muted">Not signed in. Create an account or pick one below.</span>`;
+}
+function renderAccounts(){
+  $('#accounts').innerHTML=S.users.length?S.users.map(u=>`<div class="acct ${u.username===current?'on':''}"><div><span class="nm">${esc(u.username)}</span><span class="pill ${u.role}" style="margin-left:6px">${roleName(u.role)}</span>${u.sample?'<span class="pill sample">sample</span>':''}</div>
+    ${u.username===current?'<span class="hint">current</span>':`<button class="btn ghost small" data-act="switch" data-u="${esc(u.username)}">Sign in</button>`}</div>`).join('')
+    :'<p class="empty" style="padding:6px 0">No accounts. Create one above.</p>';
+  $('#clear-btn').textContent=armClear?'Click again to clear':'Clear all';
+}
+function renderWork(){
+  const u=me(), tabs=tabsFor(u);
+  if(!tabs.includes(tab)) tab=tabs[0];
+  const unread=u&&u.role==='seeker'?S.notifications.filter(n=>n.user===u.username&&!n.read).length:0;
+  const body=PANELS[tab]();   // building the Notifications panel marks alerts read
+  const msgUnread=u?unreadCount(S,u.username):0;
+  const bar=`<div class="tabs" role="tablist">${tabs.map(t=>`<button class="tab" role="tab" aria-selected="${t===tab}" data-act="tab" data-t="${t}">${TAB_LABEL[t]}${t==='notes'&&tab!=='notes'&&unread?`<span class="badge">${unread}</span>`:''}${(t==='apps'||t==='inbox')&&tab!==t&&msgUnread?`<span class="badge">${msgUnread}</span>`:''}</button>`).join('')}</div>`;
+  const head=u?`<p class="hint" style="margin-bottom:14px">${esc(u.headline||'No headline')} · ${roleName(u.role)}</p>`:`<div class="flash info">Pick an account from the list, or create one as a job seeker or a recruiter. Browsing jobs and the self-tests work without signing in.</div>`;
+  $('#work').innerHTML=bar+(flash?`<div class="flash ${flash.kind}" role="status">${flash.html}</div>`:'')+head+`<div role="tabpanel">${body}</div>`;
+}
+function render(){renderWho();renderAccounts();renderWork();save();}
+function defaultTab(u){return !u?'jobs':u.role==='seeker'?'jobs':'inbox';}
+function signIn(name){current=name;tab=defaultTab(me());flash=null;openJob=null;openApp=null;render();}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b) return;
+  const act=b.dataset.act;
+  if(act!=='clear'&&armClear){armClear=false;}
+  if(act==='tab'){tab=b.dataset.t;flash=null;render();}
+  else if(act==='switch'){signIn(b.dataset.u);}
+  else if(act==='signout'){current=null;tab='jobs';flash=null;render();}
+  else if(act==='sample'){S=seedSample();current='seeker_a';tab='jobs';flash={kind:'info',html:'Sample data restored: 3 accounts and 4 jobs.'};render();}
+  else if(act==='clear'){ if(!armClear){armClear=true;render();} else {armClear=false;S=newState();current=null;tab='jobs';flash=null;render();} }
+  else if(act==='openjob'){openJob=Number(b.dataset.id);tab='jobs';flash=null;render();}
+  else if(act==='apply'){
+    const id=Number(b.dataset.id), r=applyToJob(S,current,id,($('#ap-note-'+id)||{}).value);
+    if(r.error){flash={kind:'bad',html:esc(r.error)};openJob=id;render();return;}
+    openApp=r.app.id;tab='apps';flash={kind:'ok',html:`Application sent to <b>${esc(r.app.employer)}</b>. They will see it under Applicants. Replies show up here.`};render();
+  }
+  else if(act==='openapp'){openApp=Number(b.dataset.id);tab='apps';flash=null;render();}
+  else if(act==='status'){
+    const r=setStatus(S,current,Number(b.dataset.id),b.dataset.s);
+    flash=r.error?{kind:'bad',html:esc(r.error)}:{kind:'info',html:`Marked <b>${esc(r.app.seeker)}</b> as ${STATUS[r.app.status].toLowerCase()}.`};openApp=Number(b.dataset.id);render();
+  }
+  else if(act==='parse'){
+    const u=me(), text=$('#resume-text').value; drafts[u.username]=text;
+    if(!text.trim()){flash={kind:'bad',html:'Paste some resume text or choose a .txt file first.'};render();return;}
+    const r=uploadResume(S,u.username,text);
+    flash={kind:'ok',html:r.resume.found.length?`Found ${r.resume.found.length} skill${r.resume.found.length===1?'':'s'}: <b>${esc(r.resume.found.join(', '))}</b>. New on your profile: ${r.added.length?esc(r.added.join(', ')):'nothing, you already had them all'}.`:'No known skills found. The skill list has about 50 entries, such as python, sql or react.'};
+    render();
+  }
+});
+document.addEventListener('change',e=>{
+  if(e.target.id!=='resume-file') return;
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  if(/\.pdf$/i.test(f.name)){flash={kind:'info',html:'PDF reading happens on the Django server. Paste the text from your PDF into the box to test it here.'};renderWork();return;}
+  const rd=new FileReader();
+  rd.onload=()=>{const u=me();drafts[u.username]=String(rd.result||'');flash=null;renderWork();};
+  rd.readAsText(f);
+});
+$('#signup-form').addEventListener('submit',e=>{
+  e.preventDefault();
+  const role=(document.querySelector('input[name=role]:checked')||{}).value;
+  const r=signUp(S,{username:$('#su-username').value,role,headline:$('#su-headline').value});
+  if(r.error){$('#su-err').textContent=r.error;return;}
+  $('#su-err').textContent=''; e.target.reset();
+  signIn(r.user.username);
+  flash={kind:'ok',html:`Account created. You are signed in as <b>${esc(r.user.username)}</b>, a ${roleName(r.user.role).toLowerCase()}.`};
+  render();
+});
+document.addEventListener('submit',e=>{
+  if(e.target.classList&&e.target.classList.contains('msg-form')){
+    e.preventDefault();
+    const id=Number(e.target.dataset.id), r=sendMessage(S,current,id,($('#msg-'+id)||{}).value);
+    flash=r.error?{kind:'bad',html:esc(r.error)}:null; openApp=id; render(); return;
+  }
+  if(e.target.id!=='post-form') return;
+  e.preventDefault();
+  const r=postJob(S,current,{title:$('#pj-title').value,description:$('#pj-desc').value,required:$('#pj-req').value});
+  if(r.error){flash={kind:'bad',html:esc(r.error)};renderWork();return;}
+  const sent=r.posting.report.filter(x=>x.alert).length;
+  flash={kind:'ok',html:`<b>${esc(r.posting.title)}</b> is live. ${sent} of ${r.posting.report.length} seeker${r.posting.report.length===1?'':'s'} got an alert.`};
+  tab='mine';render();
+});
+
+document.addEventListener('toggle',e=>{
+  const d=e.target; if(!d.dataset||d.dataset.app===undefined) return;
+  const id=Number(d.dataset.app);
+  if(d.open&&openApp!==id){openApp=id;render();}      // render() marks the opened thread read
+  else if(!d.open&&openApp===id){openApp=null;}
+},true);
+
+(function init(){
+  const saved=load();
+  if(saved){S=saved.S;current=saved.current;tab=saved.tab||'jobs';if(current&&!me())current=null;}
+  else{S=seedSample();current='seeker_a';tab='jobs';}
+  render();
+})();
+</script>
+
+</body></html>
