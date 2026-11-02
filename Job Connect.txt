@@ -1,0 +1,20 @@
+For first time setup:
+		1. Extract folder and open it inside visual code studio.
+		2. Create a new terminal.
+		3. Type this link in the terminal: http://127.0.0.1:8000/
+		4. Type the following commands in the same terminal:
+			1. python3 -m venv venv
+			2. venv\Scripts\Activate.ps1	(for Windows)
+			   source venv/bin/activate     (for macOS / Linux)
+			3. pip install -r requirements.txt
+			4. python manage.py migrate
+			5. python manage.py runserver
+		
+			Optional - To create admin access : python manage.py createsuperuser (Type this after the 5th command. Enter your details in the terminal. It will create an admin acc.)
+
+
+For opening again:
+		1. python manage.py runserver (Type this and refresh the page.)
+
+If that doesn't work:
+		1. Type "dir" in the terminal then type python manage.py runserver then refresh.

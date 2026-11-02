@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Resume — JobConnect{% endblock %}
+{% block content %}
+  <h1>Resume uploaded</h1>
+  <div class="card">
+    <p><strong>Extracted skills:</strong></p>
+    {% if resume.extracted_skills %}
+      <p>{{ resume.extracted_skills }}</p>
+    {% else %}
+      <p class="muted">No known skills were found — try adding more to SKILLS_VOCAB in resumes/utils.py.</p>
+    {% endif %}
+  </div>
+  <p><a href="{% url 'posting_list' %}">See how this ranks against current job postings →</a></p>
+{% endblock %}

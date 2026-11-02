@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Notifications — JobConnect{% endblock %}
+{% block content %}
+  <h1>Notifications</h1>
+  {% for n in notifications %}
+    <div class="card">
+      <p>{{ n.message }}</p>
+      <p class="muted">{{ n.created_at|date:"d M Y, H:i" }}{% if n.posting %} · <a href="{% url 'posting_detail' n.posting.pk %}">view posting</a>{% endif %}</p>
+    </div>
+  {% empty %}
+    <p>No notifications yet. They'll show up here when a new posting matches your profile.</p>
+  {% endfor %}
+{% endblock %}

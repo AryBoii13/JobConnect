@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Jobs — JobConnect{% endblock %}
+{% block content %}
+  <h1>Job postings</h1>
+
+  {% if ranked %}
+    <p class="muted">Ranked by how well they match your extracted skills.</p>
+    {% for posting, score in ranked %}
+      <div class="card">
+        <span class="score">{{ score }}% skill match</span>&nbsp;
+        <strong><a href="{% url 'posting_detail' posting.pk %}">{{ posting.title }}</a></strong>
+        <p class="muted">Requires: {{ posting.required_skills }}</p>
+      </div>
+    {% empty %}
+      <p>No postings yet.</p>
+    {% endfor %}
+  {% else %}
+    {% for posting in postings %}
+      <div class="card">
+        <strong><a href="{% url 'posting_detail' posting.pk %}">{{ posting.title }}</a></strong>
+        <p class="muted">Requires: {{ posting.required_skills }}</p>
+      </div>
+    {% empty %}
+      <p>No postings yet.</p>
+    {% endfor %}
+  {% endif %}
+{% endblock %}

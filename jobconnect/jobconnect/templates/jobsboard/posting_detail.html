@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}{{ posting.title }} — JobConnect{% endblock %}
+{% block content %}
+  <h1>{{ posting.title }}</h1>
+  {% if score is not None %}<p><span class="score">{{ score }}% skill match for you</span></p>{% endif %}
+  <p class="muted">Posted by {{ posting.employer.username }} · requires: {{ posting.required_skills }}</p>
+  <div class="card">{{ posting.description|linebreaks }}</div>
+{% endblock %}

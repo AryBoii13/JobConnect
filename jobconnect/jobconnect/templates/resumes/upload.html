@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Upload resume — JobConnect{% endblock %}
+{% block content %}
+  <h1>Upload your resume</h1>
+  <p class="muted">PDF or .txt. Skills are extracted automatically and added to your profile.</p>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+  </form>
+{% endblock %}

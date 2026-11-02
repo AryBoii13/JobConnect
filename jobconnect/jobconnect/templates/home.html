@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}JobConnect — Home{% endblock %}
+{% block content %}
+  <h1>JobConnect is running 🎉</h1>
+  <p>This is the starter skeleton from the First Review proposal. From here:</p>
+  <ul>
+    <li><a href="{% url 'signup' %}">Create a seeker or employer account</a></li>
+    <li>As a <strong>seeker</strong>: <a href="{% url 'upload_resume' %}">upload a resume</a> to auto-extract your skills</li>
+    <li>As an <strong>employer</strong>: <a href="{% url 'posting_create' %}">post a job</a> with required skills</li>
+    <li><a href="{% url 'posting_list' %}">Browse postings</a> — seekers see them ranked by match score</li>
+    <li><a href="/admin/">Admin panel</a> — create a superuser first (see README)</li>
+  </ul>
+{% endblock %}
